@@ -74,11 +74,24 @@ Asennus kestää muutamia sekunteja.
 
 **Mitä voit tehdä:** aikatauluttaa sosiaalisen median julkaisuja Bufferin kautta keskustelusta käsin.
 
+> **Huom:** Buffer eroaa yllä olevista kolmesta — sitä ei voi liittää yhdellä napin painalluksella claude.ai:n integraatiovalikosta, vaan se on "custom connector", joka vaatii käyttäjäkohtaisen API-avaimen.
+
 ### Käyttöönotto
 
-1. [claude.ai](https://claude.ai) → **Settings** → **Connectors**
-2. Etsi **Buffer** → **Connect**
-3. Kirjaudu Bufferiin ja yhdistä haluamasi kanavat
+**1. Hae oma API-avaimesi Bufferista**
+
+1. Kirjaudu [buffer.com](https://buffer.com)-tiliisi
+2. Avaa Bufferin asetuksista API-osio ("Get API Key")
+3. Kopioi avain talteen — se on **henkilökohtainen salaisuus**, älä jaa sitä eteenpäin
+
+**2. Lisää Buffer claude.ai:hin custom connectorina**
+
+1. [claude.ai](https://claude.ai) → **Settings** → **Connectors** → **Add custom connector**
+2. Liitä palvelimen URL: `https://mcp.buffer.com/mcp`
+3. Lisää bearer-tunnistus Authorization-otsakkeena: `Bearer SINUN_API_AVAIMESI`
+4. Tallenna
+
+Yksityiskohtaiset ohjeet ja vianetsintä: [Bufferin viralliset MCP-ohjeet](https://developers.buffer.com/guides/integrations/mcp.html).
 
 ---
 
