@@ -45,11 +45,16 @@ Kopioi tämä Notion-malli omaan työtilaasi pohjaksi:
 2. Etsi **Airtable** → **Connect**
 3. Kirjaudu Airtableen ja valitse, mihin pohjiin annat pääsyn
 
-### Aloitusmalli
+### Vaalikampanja-pohja
 
-<!-- TODO: Santeri täydentää — Airtable-mallin linkki tai upotettava HTML, joka tarjoaa "kopioi malli" -toiminnon -->
+[Avaa Vaalikampanja-pohjan asennustyökalu](./airtable-vaalikampanja.html) — luo automaattisesti Airtable-tietokannan, joka sisältää 144 valmista tehtävää, tiimitaulun, 26 Uudenmaan kuntaa ja viisi kampanjavaihetta.
 
-*Lisätään pian.*
+Tarvitset:
+
+* Airtable-tilin (luo ilmainen tili osoitteessa [airtable.com/signup](https://airtable.com/signup), jos sellaista ei vielä ole)
+* Henkilökohtaisen API-avaimen (asennustyökalu opastaa sen luomisessa)
+
+Asennus kestää muutamia sekunteja.
 
 ---
 

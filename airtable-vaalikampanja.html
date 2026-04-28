@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaalikampanja — Airtable-pohja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F2EC;--surface:#FDFCF9;--border:#DDD9CE;--border-strong:#C4BFB0;--text:#1A1916;--text-muted:#7A7769;--accent:#2C5F3F;--accent-light:#EAF2ED;--accent-border:#A8C9B5;--danger:#8B2A2A;--danger-light:#F5EAEA;--success:#1E4D32;--success-light:#E6F2EB}
+html{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+.page{width:100%;max-width:560px}
+.badge{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--accent-border);padding:4px 10px;border-radius:2px;margin-bottom:1rem}
+.title{font-family:'DM Serif Display',serif;font-size:2.25rem;line-height:1.15;margin-bottom:.5rem}
+.title em{font-style:italic;color:var(--accent)}
+.subtitle{font-size:15px;color:var(--text-muted);font-weight:300;line-height:1.6;margin-bottom:2.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.included{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
+.included-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.75rem}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.table-item{display:flex;align-items:center;gap:8px;font-size:13px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.d1{background:#2C5F3F}.d2{background:#4A7FA6}.d3{background:#9B6B3A}.d4{background:#7A4A8A}
+.tc{color:var(--text-muted);font-size:12px;margin-left:2px}
+.form-body{padding:1.5rem}
+.step{margin-bottom:1.5rem}
+.step-header{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+.sn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);flex-shrink:0}
+.sl{font-size:14px;font-weight:500}
+.sb{padding-left:32px}
+.sh{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:.6rem}
+.sh a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-border)}
+.sh a:hover{border-color:var(--accent)}
+.scopes{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.scope{font-size:11px;font-family:monospace;background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:2px;color:var(--text-muted)}
+input[type=password],input[type=text]{width:100%;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);outline:none;transition:border-color .15s}
+input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:11px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;background:var(--accent);color:#fff;border:none;border-radius:3px;cursor:pointer;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1.5rem}
+.btn:hover:not(:disabled){opacity:.88}
+.btn:active:not(:disabled){transform:scale(.99)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.status{margin-top:1rem;padding:10px 14px;border-radius:3px;font-size:13px;line-height:1.5;display:none}
+.status.info{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border);display:block}
+.status.success{background:var(--success-light);color:var(--success);border:1px solid #A8C9B5;display:block}
+.status.error{background:var(--danger-light);color:var(--danger);border:1px solid #D4AAAA;display:block}
+.pbw{margin-top:8px;height:3px;background:rgba(44,95,63,.15);border-radius:2px;overflow:hidden}
+.pb{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .4s ease}
+.pt{font-size:12px;color:var(--text-muted);margin-top:5px}
+.rl{margin-top:10px;font-size:14px;font-weight:500}
+.rl a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-border)}
+.footer{margin-top:1.5rem;text-align:center;font-size:12px;color:var(--text-muted)}
+.divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="badge">Vaalikampanja 2027</div>
+  <h1 class="title">Luo oma<br><em>kampanjapohja</em></h1>
+  <p class="subtitle">Tämä työkalu luo sinulle täydellisen Airtable-tietokannan vaalikampanjasi hallintaan — 144 valmista tehtävää, 5 kampanjavaihetta ja 26 Uudenmaan kuntaa — automaattisesti, muutamassa sekunnissa.</p>
+  <div class="card">
+    <div class="included">
+      <div class="included-label">Mitä luodaan</div>
+      <div class="tables">
+        <div class="table-item"><div class="dot d1"></div><span>Tasks</span><span class="tc">144 tehtävää</span></div>
+        <div class="table-item"><div class="dot d2"></div><span>Tiimi</span><span class="tc">9 kenttää</span></div>
+        <div class="table-item"><div class="dot d3"></div><span>Alueet</span><span class="tc">26 kuntaa</span></div>
+        <div class="table-item"><div class="dot d4"></div><span>Kampanjavaiheiden aikataulu</span><span class="tc">5 vaihetta</span></div>
+      </div>
+    </div>
+    <div class="form-body">
+      <div class="step">
+        <div class="step-header"><div class="sn">1</div><div class="sl">Luo Airtable-tili</div></div>
+        <div class="sb"><p class="sh">Jos sinulla ei ole vielä tiliä, luo ilmainen tili osoitteessa <a href="https://airtable.com/signup" target="_blank">airtable.com/signup</a>.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-header"><div class="sn">2</div><div class="sl">Luo API-avain</div></div>
+        <div class="sb">
+          <p class="sh">Mene osoitteeseen <a href="https://airtable.com/create/tokens" target="_blank">airtable.com/create/tokens</a> ja luo uusi henkilökohtainen tunnus. Lisää nämä kolme oikeutta:</p>
+          <div class="scopes"><span class="scope">data.records:write</span><span class="scope">schema.bases:write</span><span class="scope">schema.bases:read</span></div>
+          <p class="sh" style="margin-top:8px">Klikkaa sen jälkeen <strong>+ Add a base</strong> → valitse <strong>All resources</strong>.</p>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="step">
+        <div class="step-header"><div class="sn">3</div><div class="sl">Hae työtilan ID</div></div>
+        <div class="sb">
+          <p class="sh">Avaa <a href="https://airtable.com" target="_blank">airtable.com</a> ja klikkaa työtilasi nimeä vasemmassa sivupalkissa. Katso selaimen osoitepalkkia — kopioi sieltä <strong>wsp...</strong>-alkuinen osa.</p>
+          <p class="sh" style="font-family:monospace;font-size:12px;background:var(--bg);padding:6px 10px;border-radius:3px;border:1px solid var(--border)">airtable.com/<strong style="color:var(--accent)">wspXXXXXXXXXXXXXX</strong>/...</p>
+          <p class="sh" style="margin-top:6px">Jos URL ei muutu, kokeile klikata ensin jokin tietokanta auki ja sitten takaisin työtilan nimeen.</p>
+          <p style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:12px;margin-bottom:4px">Liitä työtilan ID alle</p>
+          <input type="text" id="workspaceId" placeholder="wspXXXXXXXXXXXXXX" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="step" style="margin-bottom:0">
+        <div class="step-header"><div class="sn">4</div><div class="sl">Liitä API-tunnus alle ja luo pohja</div></div>
+        <div class="sb"><input type="password" id="apiKey" placeholder="patXXXXXXXXXXXXXX.XXXXXXXX..." autocomplete="off"/></div>
+      </div>
+      <button class="btn" id="createBtn" onclick="runSetup()"><span id="btn-text">Luo Vaalikampanja-pohja</span></button>
+      <div id="status" class="status"></div>
+      <div id="pw" style="display:none"><div class="pbw"><div class="pb" id="pb"></div></div><p class="pt" id="pt"></p></div>
+      <div id="rl" class="rl" style="display:none"></div>
+    </div>
+  </div>
+  <div class="footer">Avain lähetetään suoraan Airtableen — sitä ei tallenneta minnekään.</div>
+</div>
+<script>
+const TASKS=[
+  {n:"Kilpailija-analyysi",k:"Analysoi kilpailijoiden kampanjoita (muut puolueet, oma puolue; vaalien yleinen asetelma)",ph:"2. Ehdokkaana esiintyminen",o:"1. Suunnittelu",t:"Ei aloitettu",p:3,a:"2026-08-01",d:"2027-01-16"},
+  {n:"Esitteiden hintoja",k:"Vertaile painotalojen hintoja ja tilaa flierit. Kannattaa tilata ensimmäiset flyerit jo vaaleja edeltävänä syksynä, jotta on toreilla vähän jotakin jaettavaa. (esim. 500 - 1 000 kpl erä A6 koon korttia). Halpa ulkomainen painotalo on Vistaprint, kotimaassa myös monia vaihtoehtoja.",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-08-01",d:"2026-10-31"},
+  {n:"A/B-testaus",k:"Tee A/B-testaus mainoksille: testaa eri kuvia, otsikoita ja toimintakehotteita",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-10-01",d:"2027-03-13"},
+  {n:"Kampanjapaidat",k:"Suunnittele kampanjapaidat / kampanjaliivit tai selvitä paikallisyhdistykseltä vihreiden liivet / missinauhat",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:1,a:"2026-10-01",d:"2027-01-30"},
+  {n:"Mediaseuranta",k:"Ota käyttöön mediaseurantatyökalu (Google Alerts, Mention tms.), jos teette ison kampanjan ja saatte paljon mediaosumia",ph:"2. Ehdokkaana esiintyminen",o:"8. Media ja brändi",t:"Ei aloitettu",p:1,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Kampanjatuotteet",k:"Suunnittele kampanjatuotteet (jakotuotteet, varainhankintatuotteet jne)",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-08-01",d:"2026-10-31"},
+  {n:"SWOT-analyysi",k:"Tee SWOT-analyysi (kampanjan alussa, päivitä puolivälissä)",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:2,a:"2026-05-01",d:"2026-08-21"},
+  {n:"Vaalikoneet",k:"Vaalikoneiden täyttäminen vie todella paljon aikaa, kysymyksiä on noin 200-300 kpl. Vaalikoneita on: 1) Tärkeät vaalikoneet mm. Yle, HS, oma paikallislehti, 2) hyödylliset vaalikoneet esim. muut laajat mediat 3) lobbarivaalikoneet esim. eri järjestöjen vaalikoneet jne oman harkinnan mukaan. Viite yleensä tuottaa mallivastauksia. Hyödynnä myös puolueen ohjelmia. Omat vastaukset kannattaa koota taulukkoon ennen syöttöä viralliseen ohjelmaan. Lue myös ehdokasoppaan ohjeet",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2027-01-14",d:"2027-02-28"},
+  {n:"Tapahtumalista",k:"Kerää lista tapahtumista, missä ehdokas voisi olla läsnä. Seuraa puolueen tapahtumakalenteria",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:"Ei aloitettu",p:4,a:"2026-08-01",d:"2027-04-11"},
+  {n:"Tukiryhmäseuranta",k:"Seuraa tukiryhmäläisten määrän kehitystä",ph:"2. Ehdokkaana esiintyminen",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Purkutilaisuus",k:"Järjestä tiimin purkutilaisuus. Miten meni? Mikä oli hyvin, mikä voisi olla paremmin?",ph:"5. Jälkityöt",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2027-04-26",d:"2027-05-02"},
+  {n:"Vaalivalvojaiset",k:"Järjestä vaalivalvojaiset tai suunnittele osallistuminen puolueen valvojaisiin",ph:"4. Vapaapudotus",o:"6. Tapahtumat",t:"Ei aloitettu",p:4,a:"2027-04-07",d:"2027-04-18"},
+  {n:"Lahjoituspyynnöt",k:"Pyydä lahjoituksia rahoitussuunnitelman mukaisesti. Rahaa pitää kehdata pyytää!",ph:"2. Ehdokkaana esiintyminen",o:"5. Talous",t:"Ei aloitettu",p:5,a:"2026-10-18",d:"2027-04-04"},
+  {n:"Placeholder flyer",k:"Hanki pieni erä (esim. 500-1000 kpl) A6-koon flyereita, joita voit jakaa jo syksyn aikana kiertäessäsi erilaisia toritapahtumia.",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:null,p:null,a:"2026-05-01",d:"2026-08-31"},
+  {n:"Kampanjajulisteet",k:"Tee kampanjajulisteita",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-11-16",d:"2026-12-11"},
+  {n:"Viimeinen some-push",k:"Tee viimeinen some-push",ph:"4. Vapaapudotus",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2027-04-05",d:"2027-04-13"},
+  {n:"GOTV-puhelinsoitot",k:"Tee GOTV-soittolista: varmistetut kannattajat äänestämään (Get Out The Vote)",ph:"3. Loppukiri",o:"7. Data & CRM",t:"Ei aloitettu",p:1,a:"2027-04-01",d:"2027-04-18"},
+  {n:"Kokoa tukiryhmä",k:"Toteuta tukiryhmäläisten rekrytointikampanja. Vinkki: \"Kysy ensimmäisenä sitä jonka eniten haluat, ei sitä joka todennäköisimmin suostuu.\"",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2026-08-15",d:"2027-01-31"},
+  {n:"Loppukirisuunnitelma",k:"Tee päivätason kampanjasuunnitelma loppukiriin (viikot 10–15) eli ennakkoäänestyksen aikaan",ph:"2. Ehdokkaana esiintyminen",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2027-02-07",d:"2027-03-06"},
+  {n:"Mielipidekirjoitukset",k:"Kirjoita mielipidekirjoituksia eri lehtiin",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-05-01",d:"2027-04-04"},
+  {n:"Rahoitusseuranta",k:"Laadi vaalirahoituksen seurantataulukko ja päivitä kuukausittain osana budjettia; lähempänä vaaleja viikottain",ph:"2. Ehdokkaana esiintyminen",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:5,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Ideointityöpaja",k:"Järjestä tukiryhmän ideointityöpaja (kampanjan teemat jne). Luo osallisuuden paikkoja ja kokemuksia!",ph:"2. Ehdokkaana esiintyminen",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-08-01",d:"2026-12-11"},
+  {n:"Kadunvarsikyltit",k:"Varmista kadunvarsikylttien sallittu kiinnittämisaika, valitse paikat ja suunnittele mainosten vienti (tasan kuukausi ennen vaaleja) ja poisto (viimeistään viikko vaalipäivän jälkeen). Katso myös ehdokasoppaan ohjeet kadunvarsikylteistä",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:"Ei aloitettu",p:3,a:"2026-10-20",d:"2027-01-31"},
+  {n:"Iskulauseet",k:"Valmistele iskulauseita",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-11-09",d:"2026-12-04"},
+  {n:"Kiitosviestit",k:"Lähetä kiitokset avainhenkilöille ja koko tukiryhmälle",ph:"5. Jälkityöt",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2027-04-19",d:"2027-04-25"},
+  {n:"Lanseerauksen suunnittelu",k:"Suunnittele ehdokkuuden julkistaminen kokonaisuutena: missä, milloin, kenelle, miten. Kirjoita tiedote valmiiksi, päätä some-julkaisun sisältö ja formaatti, kutsu avainhenkilöt paikalle tai tiedota heitä etukäteen. Varmista, että verkkosivut, lahjoituslinkki ja somekanavat ovat valmiina lanseeraushetkellä.",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2026-10-09"},
+  {n:"Lahjoituslinkki",k:"Luo lahjoituslinkki lisäämällä kampanjati ehdokasrekisteriin",ph:"2. Ehdokkaana esiintyminen",o:"5. Talous",t:"Ei aloitettu",p:5,a:"2026-09-28",d:"2026-10-16"},
+  {n:"Oma uutiskirje",k:"Perusta oma uutiskirje tai muu tapa kerätä ihmisten yhteystietoja: kerää ja luokittele kontaktit systemaattisesti",ph:"2. Ehdokkaana esiintyminen",o:"7. Data & CRM",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2027-04-11"},
+  {n:"Suosittelijani-julkaisut",k:"Julkaise tukijalistoja ja endorsementteja säännöllisesti somessa",ph:"2. Ehdokkaana esiintyminen",o:"10. Sidosryhmät",t:"Ei aloitettu",p:3,a:"2027-01-23",d:"2027-04-04"},
+  {n:"Vaikuttajakontaktointi",k:"Kontaktoi paikalliset mielipidevaikuttajat ja aktivoi heidät tukijoiksi",ph:"2. Ehdokkaana esiintyminen",o:"10. Sidosryhmät",t:"Ei aloitettu",p:1,a:"2026-10-26",d:"2027-03-27"},
+  {n:"Mediaseuranta & reaktiot",k:"Seuraa ja reagoi mediassa käytävään keskusteluun",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Lanseeraus",k:"Julkaise ehdokkuus julkisesti suunnitelman mukaisesti. Lähetä lehdistötiedote, julkaise some-postaus, avaa kampanjasivu, lähetä uutiskirje lähipiirille. Varmista, että kaikki tiimiläiset tietävät roolinsa lanseerauspäivänä ja seuraavina päivinä.",ph:"2. Ehdokkaana esiintyminen",o:"6. Tapahtumat",t:"Ei aloitettu",p:5,a:"2026-10-19",d:"2026-10-23"},
+  {n:"Kannanotot",k:"Kirjoita kannanottoja ajankohtaisiin aiheisiin",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-10-26",d:"2027-04-11"},
+  {n:"Rahoitusilmoitus",k:"Valmistele vaalirahoitusilmoitus",ph:"4. Vapaapudotus",o:"5. Talous",t:"Ei aloitettu",p:5,a:"2027-04-19",d:"2027-06-18"},
+  {n:"Ideoiden kerääminen",k:"Luo tapa kerätä palautetta sekä ideoita tukiryhmältä.",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-05-01",d:"2026-08-31"},
+  {n:"Ydinviestit",k:"Luo kampanjan ydinviestit. Hyvällä kampanjalla on 1-3 pääviestiä, jotka puhuttelevat kampanjaa. Ks. ehdokasoppaasta lisätietoja",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-08-01",d:"2026-09-30"},
+  {n:"Mainoshinnat",k:"Kerää tiedot mainosten hinnoista eri kanavissa. Tutustu oman piirisi mahdollisiin mainosmyynti-ohjeisiin",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-09-07",d:"2026-11-02"},
+  {n:"Faktapaketti",k:"Kokoa faktapaketti keskeisistä teemoista, jotta kampanjaryhmäläiset osaavat vastata ydinkysymyksiin. Hyödynnä myös puolueen ohjelmia.",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-11-16",d:"2026-12-11"},
+  {n:"Puoluetapaaminen",k:"Sovi tapaaminen puolueen piirijärjestön kanssa ja selvitä tuki. Hyödyllisiä kontakteja: piirin vaalityöryhmä, piirin vaalityöntekijä, piirin puheenjohtaja. Selvitä tarkka rakenne omasta piiristäsi",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:4,a:"2026-04-01",d:"2026-05-31"},
+  {n:"Miksi äänestää minua?",k:"Listaa 10 syytä, miksi kohderyhmäsi kannattaa äänestää sinua",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-08-01",d:"2026-08-07"},
+  {n:"Äänestysaikeenseuranta",k:"Kannusta tuttuja äänestämään, seuraa ydinkohderyhmien äänestysintoa",ph:"2. Ehdokkaana esiintyminen",o:"7. Data & CRM",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-04"},
+  {n:"Lehdistötiedote ehdokkuudesta",k:"Lähetä lehdistötiedote kampanjan käynnistymisestä vähintään omaan paikallislehteen",ph:"2. Ehdokkaana esiintyminen",o:"8. Media ja brändi",t:"Ei aloitettu",p:5,a:"2026-10-19",d:"2026-10-23"},
+  {n:"Sähköiset bannerit",k:"Hanki ja suunnittele sähköistä mainontaa",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-11-09",d:"2027-02-28"},
+  {n:"Viimeinen kampanjatapahtuma",k:"Järjestä viimeinen suuri kampanjatapahtuma",ph:"3. Loppukiri",o:"6. Tapahtumat",t:"Ei aloitettu",p:3,a:"2027-03-29",d:"2027-04-04"},
+  {n:"Kriisiviestintäsuunnitelma",k:"Laadi kriisiviestintäsuunnitelma puolueen pohjan perusteella: kuka vastaa viestinnästä? Miten varaudumme? Onko henkilöhistoriassasi asioita, joita joku ulkopuolinen tai media voisi nostaa negatiivisessa mielessä julki?",ph:"1. Valmistelu",o:"8. Media ja brändi",t:"Ei aloitettu",p:5,a:"2026-08-24",d:"2026-09-25"},
+  {n:"Ovelta ovelle",k:"Organisoi ovelta ovelle -kampanjointi",ph:"3. Loppukiri",o:"4. Katukampanja",t:"Ei aloitettu",p:3,a:"2027-03-15",d:"2027-04-18"},
+  {n:"Verkkosivut FAQ",k:"Kirjoita FAQ kampanjan verkkosivuille",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-11-16",d:"2026-12-18"},
+  {n:"Kohderyhmien valinta",k:"Määrittele kampanjasi pääkohderyhmät: keitä he ovat? Mikä on heille tärkeää? Missä he ovat? Ks. myös ehdokasopas",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-04-14",d:"2026-10-31"},
+  {n:"Talousvastaava",k:"Rekrytoi talousvastaava",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-04-01",d:"2026-05-31"},
+  {n:"Blogitekstit",k:"Kirjoita blogitekstejä",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-02",d:"2027-01-02"},
+  {n:"Tiimipalaverit",k:"Järjestä säännöllisiä ydintiimin tapaamisia. Sopikaa kokousaikataulu. Hyvä aikataulu esim. kerran kuussa, lähempänä vaaleja kerran viikossa. Koko tukiryhmän tapaamisia muutamia kertoja painottuen vaalikevääseen.",ph:"2. Ehdokkaana esiintyminen",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Kampanjabudjetti",k:"Tee kampanjan budjetti. Löydät valmiin budjettipohjan tukimateriaaleista. Vinkki: jos on aikaa, tee kaksi eri versiota. 1) unelmabudjetti, jos meillä olisi kaikki haluamamme - mitä se maksaa; 2) realistinen minimibudjetti, mikä on pienin mahdollinen määrä tuloja, mikä meillä voi olla ja mitä sillä saa hankittua; - Näitä kahta vertailemalla voit katsoa kokonaisbudjettia",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-05-01",d:"2026-06-19"},
+  {n:"Tukijalista",k:"Tee lista henkilöstä, joita voit pyytää tukitiimiin",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-10-01",d:"2027-02-28"},
+  {n:"Tulosanalyysi",k:"Analysoi vaalitulos, tee arvio kampanjasta ja opi siitä",ph:"5. Jälkityöt",o:"1. Suunnittelu",t:"Ei aloitettu",p:3,a:"2027-04-26",d:"2027-05-09"},
+  {n:"Sisäinen viestintä",k:"Luo tukiryhmän viestintäkanavat (esim. WhatsApp yhteisö) ja suunnittele moderointi",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-08-31",d:"2026-09-25"},
+  {n:"Järjestöjen sitoumukset",k:"Laadi lista järjestöistä ja yhdistyksistä, joiden arvot jaat. Tutustu heidän vaalitavoitteisiinsa. Seuraa, julkaisevatko he sitoumuksia tai kampanjoita, jotka voit allekirjoittaa.",ph:"1. Valmistelu",o:"10. Sidosryhmät",t:"Ei aloitettu",p:3,a:"2026-09-07",d:"2026-10-02"},
+  {n:"Vaalivideo",k:"Luo vaalivideo",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2027-02-28"},
+  {n:"Some-mainokset",k:"Luo some-mainokset",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Passiivinen",p:3,a:"2026-11-23",d:"2027-03-31"},
+  {n:"Äänestysmuistutukset",k:"Suunnittele some-kampanja äänestysmuistutuksiin",ph:"3. Loppukiri",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2027-03-15",d:"2027-04-18"},
+  {n:"Mainoskanavat",k:"Valitse mainoskanavat budjetin ja hintojen perusteella",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-09-21",d:"2026-10-09"},
+  {n:"Some & sivut jälkityö",k:"Päivitä some-kanavat ja verkkosivut",ph:"5. Jälkityöt",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2027-04-19",d:"2027-04-25"},
+  {n:"Hissipuhe",k:"Valmistele ja harjoittele 60 sekunnin avausesittely vaalipaneeleja ja torikohtaamisia varten",ph:"2. Ehdokkaana esiintyminen",o:"9. Esiintymiset",t:"Ei aloitettu",p:5,a:"2026-09-21",d:"2026-10-09"},
+  {n:"Visuaaliset sitaatit",k:"Luo visuaalisia sitaatteja. Hyödynnä puolueen valmiita canva-pohjia tai luo oma sitaattipohja nopeaa viestintää varten",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2027-04-11"},
+  {n:"Flyerit & esitteet",k:"Suunnittele flyerit ja esitteet, aikatauluta hankita. Huomioi aikataulutuksessa myös jakamiseen kuluva aika, jakajien määrä, vaalinumeroiden tulemisen ajankohta sekä ennakkoäänestyksen alku. Mieti, jaatko esitteitä kädestä käteen (missä on ihmisiä?) vai postiluukkuihin (onko paljon ei mainoksia?).",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2026-11-09",d:"2026-12-04"},
+  {n:"Analysoi esiintymiset",k:"Kerää palaute ja kehityskohdat paneelien ja muiden esiintymisten jälkeen",ph:"2. Ehdokkaana esiintyminen",o:"9. Esiintymiset",t:"Ei aloitettu",p:2,a:"2026-10-19",d:"2027-04-04"},
+  {n:"Videosisältö",k:"Luo videosisältöä ja lyhytvideoita",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2027-04-04"},
+  {n:"Roll-up & beach flag",k:"Suunnittele roll-up tai beach flag",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-08-01",d:"2026-12-04"},
+  {n:"Varainhankintasuunnitelma",k:"Tee varainhankintasuunnitelma (lista tahoista keneltä pyydät lahjoituksia)",ph:"2. Ehdokkaana esiintyminen",o:"5. Talous",t:"Ei aloitettu",p:5,a:"2026-04-20",d:"2026-10-02"},
+  {n:"Somepostausten ajastus",k:"Ajasta viikon somepostaukset",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-11-02",d:"2027-04-11"},
+  {n:"Varainkeruuseuranta",k:"Seuraa varainkeruun toteutumista",ph:"2. Ehdokkaana esiintyminen",o:"5. Talous",t:"Ei aloitettu",p:4,a:"2026-10-19",d:"2027-04-11"},
+  {n:"SWOT-päivitys",k:"Päivitä SWOT-analyysi puolivälissä kampanjaa",ph:"2. Ehdokkaana esiintyminen",o:"1. Suunnittelu",t:"Ei aloitettu",p:2,a:"2027-01-26",d:"2027-02-06"},
+  {n:"Mediakontaktointi",k:"Tee aktiivinen mediakontaktointi: tarjoa juttuideoita toimittajille",ph:"2. Ehdokkaana esiintyminen",o:"8. Media ja brändi",t:"Ei aloitettu",p:2,a:"2026-10-26",d:"2027-03-27"},
+  {n:"Katukampanjakoulutus",k:"Tee tukiryhmän katukampanjoinnin startti koulutus + heti kokeilemaan. HUOM! Yksin ei saa kampanjoida, aina kaksin (turvallisuus).",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:"Ei aloitettu",p:3,a:"2026-11-02",d:"2027-02-28"},
+  {n:"Ulkomainonta",k:"Suunnittele ulkomainonta. Höydynnä piirin mainosvaraukset",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-10-11",d:"2026-12-18"},
+  {n:"CRM-järjestelmä",k:"Valitse ja ota käyttöön CRM-järjestelmä äänestäjäkontaktien hallintaan (vain isot kampanjat isoissa vaalipiireissä)",ph:"1. Valmistelu",o:"7. Data & CRM",t:"Ei aloitettu",p:1,a:"2026-08-24",d:"2026-09-25"},
+  {n:"Podcast-haastattelu",k:"Koita päästä haastateltavaksi podcastiin",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-08-01",d:"2027-03-26"},
+  {n:"Epävarmat äänestäjät",k:"Priorisoi loppukirin kontaktointi: fokusoidu epävarmoihin äänestäjiin, jotka symppaavat vihreitä",ph:"3. Loppukiri",o:"7. Data & CRM",t:"Ei aloitettu",p:3,a:"2027-03-09",d:"2027-03-14"},
+  {n:"Kampanjatili",k:"Avaa kampanjatili ja perusta kirjanpito. Virallinen kampanja-aika alkaa 6 kk ennen vaaleja, mutta oma kirjanpito kannattaa ottaa jo tätä ennen syntyneistä kuluista. Ks. myös ehdokasopas lisätietoja",ph:"1. Valmistelu",o:"5. Talous",t:"Ei aloitettu",p:5,a:"2026-05-01",d:"2026-06-12"},
+  {n:"Tiimiaikataulu",k:"Kysy ydintiimiläisten aikatauluja (lomat, matkat, muut) ja tee varahenkilöjärjestelyt",ph:"2. Ehdokkaana esiintyminen",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Vaalikuvaus",k:"Varaa aika vaalikuvaukseen, jossa otetaan virallinen ehdokaskuva. Katso myös ehdokasoppaasta vinkit kuvaukseen valmistautumiseen.",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2026-11-02",d:"2027-01-31"},
+  {n:"Domain-varaus",k:"Varaa domain nimi esim. www.etunimisukunimi.fi, jotta kukaan ei ehdi varata sitä ennen sinua! Domainin kannattaa varata varastoon, vaikka ei heti tietäisi, haluaako nettisivuja",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2026-09-11"},
+  {n:"Some-analytiikka",k:"Seuraa some-analytiikkaa ja verkkosivujen kävijätilastoja",ph:"3. Loppukiri",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-05-01",d:"2027-04-11"},
+  {n:"Äänimäärätavoite",k:"Analysoi vaalipiirin äänestyshistoria ja laske realistinen äänimäärätavoite",ph:"2. Ehdokkaana esiintyminen",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2026-05-31"},
+  {n:"Tukiryhmä vaalien jälkeen",k:"Luo suunnitelma kannattajien sitouttamiseksi jatkossa",ph:"5. Jälkityöt",o:"1. Suunnittelu",t:"Ei aloitettu",p:3,a:"2027-05-03",d:"2027-05-16"},
+  {n:"Loppukiri-kampanja",k:"Suunnittele loppukiri-kampanja",ph:"3. Loppukiri",o:"4. Katukampanja",t:"Ei aloitettu",p:5,a:"2027-03-15",d:"2027-04-04"},
+  {n:"Vaalilaki",k:"Perehdy vaalilakiin ja eduskuntavaalien erityissääntelyyn. Tutustu myös ehdokasoppaan sisältöihin aiheista",ph:"1. Valmistelu",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:4,a:"2026-04-27",d:"2026-05-08"},
+  {n:"Vaalipaneelit",k:"Seuraa tietoja vaalipaneeleista ja ilmoittaudu rohkeasti mukaan. Usein kutsuja tulee piirin vaalityöntekijän kautta, lisäksi välillä paikalliset ehdokkaat saavat kutsuja myös suoraan paikallisilta toimijoilta.",ph:"2. Ehdokkaana esiintyminen",o:"9. Esiintymiset",t:"Ei aloitettu",p:4,a:"2026-10-19",d:"2027-03-31"},
+  {n:"Slogan",k:"Suunnittele kampanjan slogan",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2027-02-13"},
+  {n:"Tapaa ehdokas -tilaisuudet",k:"Järjestä \"tapaa ehdokas\" -tilaisuuksia",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Postiluukkuesitteet",k:"Organisoi esitteiden luukutus postiluukkuihin",ph:"3. Loppukiri",o:"4. Katukampanja",t:"Ei aloitettu",p:3,a:"2027-03-18",d:"2027-04-11"},
+  {n:"Uusien perehdytys",k:"Suunnittele uusien tukiryhmäläisten perehdytys ja mukaan ottaminen. Hyödynnä myös tukiryhmäläisiä varten tehty n. tunnin pituinen verkkokoulutus",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-09-21",d:"2026-10-09"},
+  {n:"Visuaalinen ilme",k:"Suunnittele oma visuaalinen ilme tai käytä puolueen valmista ilmettä.",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-05-01",d:"2026-09-30"},
+  {n:"Äänestysohjeet",k:"Luo ja jaa äänestysohjeita eri kielillä",ph:"3. Loppukiri",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2027-03-22",d:"2027-04-18"},
+  {n:"Verkkosivu retargeting",k:"Ota käyttöön uudelleenkohdentaminen (retargeting) verkkosivukävijöille (vain isot kampanjat, huomioi myös yksityisyysvaatimukset)",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:1,a:"2026-12-07",d:"2027-02-28"},
+  {n:"Lopullinen rahoitusilmoitus",k:"Jätä lopullinen vaalirahoitusilmoitus määräajassa (2 kk vaalien jälkeen)",ph:"5. Jälkityöt",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:5,a:"2027-04-19",d:"2027-06-18"},
+  {n:"Esiintymiskoulutus",k:"Harjoittele julkista esiintymistä ja osallistu koulutuksiin",ph:"1. Valmistelu",o:"9. Esiintymiset",t:"Ei aloitettu",p:2,a:"2026-08-24",d:"2026-12-31"},
+  {n:"Kampanjatavoitteet",k:"Aseta selkeät, mitattavat tavoitteet kampanjallesi (esim. kohtaamisten määrä, paljonko ääniä, paljonko postauksia, paljonko vapaaehtoisia, paljonko lahjoituksia jne)",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-04-07",d:"2026-06-12"},
+  {n:"Puhelinsoittokampanja",k:"Käynnistä systemaattinen puhelinsoittokampanja (harkinnan mukaan, ei Suomessa tyypillinen kampanjointitapa)",ph:"2. Ehdokkaana esiintyminen",o:"4. Katukampanja",t:"Ei aloitettu",p:1,a:"2027-03-01",d:"2027-04-11"},
+  {n:"Varainkeruutapahtuma",k:"Suunnittele varainkeruutapahtuma",ph:"2. Ehdokkaana esiintyminen",o:"6. Tapahtumat",t:"Ei aloitettu",p:3,a:"2026-09-21",d:"2026-11-06"},
+  {n:"Kampanjatyyli",k:"Määritä avainsanat: millainen on kampanjasi tyyli ja sävy (eng. \"tone of voice\", \"brand sentiment\"). Mihin aiheisiin otatte kantaa? Oletteko kärjistävä vai diplomaattinen? Vetoatteko enemmän tunteisiin vai järkeen?",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-05-01",d:"2026-09-15"},
+  {n:"Äänestyspaikka",k:"Varmista, että kaikki varmistuneet kannattajat tietävät oman äänestyspaikansa. Varmista, että jokainen katukampanjoija tietää, missä on lähin äänestyspaikka",ph:"4. Vapaapudotus",o:"4. Katukampanja",t:"Ei aloitettu",p:5,a:"2027-04-05",d:"2027-04-06"},
+  {n:"Talkoolaisten motivointi",k:"Luo toimintamallit tukiryhmäläisten motivointiin ja kiittämiseen",ph:"2. Ehdokkaana esiintyminen",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-11"},
+  {n:"Avajaistilaisuus",k:"Suunnittele kampanjan avajaistilaisuus tammi-helmikuulle.",ph:"2. Ehdokkaana esiintyminen",o:"6. Tapahtumat",t:"Ei aloitettu",p:4,a:"2026-10-19",d:"2027-01-23"},
+  {n:"Videostrategia",k:"Suunnittele videosisältöstrategia, mikäli tuotatte paljon videoita",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-08-01",d:"2026-11-13"},
+  {n:"Lehtimainokset",k:"Suunnittele lehtimainokset",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2027-02-28"},
+  {n:"Kuukausittainen mielipidekirjoitus",k:"Julkaise vähintään yksi mielipidekirjoitus kuukaudessa valtakunnallisessa mediassa",ph:"2. Ehdokkaana esiintyminen",o:"8. Media ja brändi",t:"Ei aloitettu",p:3,a:"2026-10-19",d:"2027-04-04"},
+  {n:"Julkaisuaikataulu",k:"Suunnittele sisältöjen (some, blogit yms.) julkaisuaikataulu. Mahdollinen idea on aikatauluttaa postauksia kahdella tavalla: 1) etukäteen aikataulutetut postaukset vaalikärjistä, jotka tiettyinä päivinä; 2) \"tyhjät päivät\", jolloin ehdokas tekee kantaaottavaa viestintää jostain ajankohtaisesta aiheesta.",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-11-02",d:"2026-11-13"},
+  {n:"Meta Business Manager",k:"Luo Meta Business Manager -tili ja kampanjarakenne Facebook/Instagram-mainontaa varten. HUOMIO! TÄllä hetkellä Meta kieltää poliittisen mainonnan, tarkista säännöstö tai kysy työntekijältä",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Passiivinen",p:5,a:"2026-08-01",d:"2026-11-06"},
+  {n:"Verkkosivuoptiomointi",k:"Optimoi verkkosivut mm. hakukoneita varten. Huomioi myös tekoälyagentit",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-10-26",d:"2026-11-13"},
+  {n:"Ammattijärjestöt",k:"Selvitä ammattijärjestöt ja hae kannatusilmauksia tai pyydä rahoitusta",ph:"2. Ehdokkaana esiintyminen",o:"10. Sidosryhmät",t:"Ei aloitettu",p:3,a:"2026-10-26",d:"2027-03-27"},
+  {n:"Kampanjapinssit",k:"Tee kampanjapinssejä tukiryhmälle, hanki ehdokasta varten \"olen ehdolla\" -pinssi",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-07-19",d:"2027-01-30"},
+  {n:"Kiitoskirjeet lahjoittajille",k:"Luo kiitoskirjeet lahjoittajille ja päivitä automaattinen kiitosviesti puolueen lahjoituspalveluun. Pohdi, kontaktoitko jokaisen lahjoittajan henkilökohtaisesti (suositeltavaa)",ph:"1. Valmistelu",o:"5. Talous",t:"Ei aloitettu",p:4,a:"2026-09-20",d:"2026-10-15"},
+  {n:"Medialle-sivusto",k:"Valmistele mediakitti toimittajille (CV, kuva, teemat, yhteystiedot) omilla verkkosivuilla",ph:"1. Valmistelu",o:"8. Media ja brändi",t:"Ei aloitettu",p:2,a:"2026-08-24",d:"2026-09-25"},
+  {n:"Median yhteystiedot",k:"Kerää median yhteystiedot mm. mielipidekirjoitusten lähettämistä varten. Isommissa kampanjoissa on hyödyllistä kerätä myös yhteystietoja suoraan toimittajiin.",ph:"1. Valmistelu",o:"8. Media ja brändi",t:"Ei aloitettu",p:2,a:"2026-08-24",d:"2026-09-25"},
+  {n:"Mediastrategia",k:"Laadi mediastrategia: millä sanomalla tavoitat minkäkin kohderyhmän; missä kanavassa viestit mitäkin; mitkä ovat tavoitteet näkyvyyden kasvattamiseen",ph:"1. Valmistelu",o:"8. Media ja brändi",t:"Ei aloitettu",p:3,a:"2026-08-10",d:"2026-09-11"},
+  {n:"Mediavalinnat",k:"Tee mediavalinnat: miten tavoitan kohderyhmäni? Missä kanavissa puhumme? Miten hyödynnämme perinteistä mediaa?",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:3,a:"2026-11-09",d:"2026-11-20"},
+  {n:"Puolueen ohjeet",k:"Selvitä puolueen kampanjaohjeet, visuaalinen linja ja yhteiset viestit. Tutustu vihreään ehdokasopas -sivustoon",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-04-20",d:"2026-06-12"},
+  {n:"Discord",k:"Kirjaudu sisään oman piirin sekä puolueen valtakunnalliselle Discord-serverille. Sopikaa, kenellä kampanjasta on vastuulla seurata discordissa tapahtuvaa viestintää (hyvä olla joku muu kuin ehdokas). Pääviestintä tulee sähköpostilla, mutta erityisesti muiden ehdokkaiden kanssa viestittelyyn discord on hyvä",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2026-05-01",d:"2026-10-02"},
+  {n:"Kampanjapäällikkö",k:"Rekrytoi kampanjapäällikkö",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2026-05-31"},
+  {n:"Yhteistyö muiden kanssa",k:"Sovi yhteiskampanjoinnista muiden ehdokaskollegojen kanssa vaalipiirissä. Tutustu muihin ehdokkaisiin ja kampanjapäälliköihin",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-09-07",d:"2027-01-23"},
+  {n:"Digibudjetti loppukiri",k:"Kasvata digitaalisen mainonnan budjetti loppukirissä, kohdennus epävarmoihin (huom meta rajoitukset poliittiseen viestintään)",ph:"3. Loppukiri",o:"3. Viestintä",t:"Passiivinen",p:5,a:"2027-03-27",d:"2027-04-18"},
+  {n:"Vaalipaneelivalmistelu",k:"Käy läpi eduskuntavaalien tyypilliset debattikysymykset ja laadi vastaukset / omat puhepointit. Miten kehystän eri ongelmia? Miten siirrän huomion itselleni tärkeisiin asioihin? Miten vastaan niihin geneerisiin aiheisiin, jotka ovat näissä vaaleissa tärkeitä?",ph:"2. Ehdokkaana esiintyminen",o:"9. Esiintymiset",t:"Ei aloitettu",p:4,a:"2026-11-01",d:"2026-10-09"},
+  {n:"Vastaväitteet",k:"Valmistele vastaväitteitä",ph:"2. Ehdokkaana esiintyminen",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2027-02-23",d:"2027-03-26"},
+  {n:"Kiitos & seuraavaksi",k:"Järjestä \"kiitos ja mitä seuraavaksi\" -tilaisuus tukiryhmälle",ph:"5. Jälkityöt",o:"6. Tapahtumat",t:"Ei aloitettu",p:5,a:"2027-05-03",d:"2027-05-16"},
+  {n:"Roolit & vastuut",k:"Määrittele ydintiimin roolit ja vastuut",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-08-01",d:"2026-09-25"},
+  {n:"Loppurutistustapaaminen",k:"Järjestä tukiryhmän tapaaminen ennen loppurutistusta",ph:"3. Loppukiri",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2027-03-15",d:"2027-04-03"},
+  {n:"Kiitosviestit äänestäjille",k:"Julkaise kiitosviestit äänestäjille ja tukijoille",ph:"5. Jälkityöt",o:"2. Tukiryhmä",t:"Ei aloitettu",p:5,a:"2027-04-19",d:"2027-04-25"},
+  {n:"Tule mukaan -lomake",k:"Luo lomake, jolla voi liittyä tukiryhmään. Pienissä kampanjoissa voi myös liittää suora linkki WhatsApp-ryhmään tai kampanjapäällikön yhteystiedot",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:3,a:"2026-08-01",d:"2026-09-30"},
+  {n:"Ensimäinen palaveri",k:"Järjestä ydintiimin kick-off; määritä kampanjan tavoitteet, jakakaa vastuu alueet ja sopikaa toimintatavat",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-04-01",d:"2026-08-15"},
+  {n:"Tukiryhmän tehtävälista",k:"Luo tukiryhmän tehtävälista (eli aseta esim. vastuuhenkilöt tähän taulukkoon)",ph:"1. Valmistelu",o:"2. Tukiryhmä",t:"Ei aloitettu",p:4,a:"2026-09-07",d:"2026-10-02"},
+  {n:"Ehdokasesittely",k:"Täydennä sense-rekisterin tiedot ja kirjoita esittelytarina, jotta tulet näkyviin puolueen nettisivujen ehdokasgallerioihin.",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:5,a:"2026-09-07",d:"2026-10-02"},
+  {n:"Kampanjakuvat",k:"Ottakaa valokuvia ulkona tai sisällä kampanjan omaa viestintää varten. Hyvä ajankohta on ottaa ajattomia geneerisiä ulkokuvia sellaista taustaa vasten, joka voisi olla lähes mistä tahansa vaalipiiristä.",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:4,a:"2026-04-01",d:"2027-02-28"},
+  {n:"Tietosuojaseloste",k:"Laadi kampanjan tietosuojaseloste, mikäli keräätte esim. uutiskirjettä tai verkkosivusi käyttää evästeitä. Huomioi GDPR-vaatimukset",ph:"1. Valmistelu",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:2,a:"2026-08-10",d:"2026-09-25"},
+  {n:"Vaalirahoituslaki",k:"Selvitä vaalirahoituslain velvoitteet eduskuntavaaleissa; tutustu ensin ehdokasoppaaseen. Kampanpäällikön + ehdokkaan on hyvä silmäillä läpi myös itse vaalilaki.",ph:"1. Valmistelu",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:5,a:"2026-04-27",d:"2026-05-08"},
+  {n:"Ennakkoilmoitus rahoitus",k:"Tee ennakkoilmoitus vaalirahoituksesta ennen ennakkoäänestyksen alkua. Vihreiden ehdokassopimuksen mukaan pakollinen kaikille vihreille ehdokkaille.",ph:"4. Vapaapudotus",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:5,a:"2027-03-15",d:"2027-04-06"},
+  {n:"Ulkomainosluvat",k:"Selvitä ulkomainosten lupakäytännöt omassa vaalipiirissä",ph:"1. Valmistelu",o:"0. Hallinto ja luvat",t:"Ei aloitettu",p:3,a:"2026-10-10",d:"2026-11-30"},
+  {n:"Sidosryhmälista",k:"Tee sidosryhmälista (yhdistykset, yrittäjäjärjestöt, asuinalueen toimijat, kulttuuritoimijat, urheiluseurat, ammattiliitot...)",ph:"1. Valmistelu",o:"10. Sidosryhmät",t:"Ei aloitettu",p:2,a:"2026-09-07",d:"2026-10-02"},
+  {n:"Verkkosivut",k:"Suunnittele verkkosivut",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2026-08-24",d:"2026-09-18"},
+  {n:"Somekanavien valinta",k:"Valitse somekanavat, joita aio käyttää",ph:"1. Valmistelu",o:"3. Viestintä",t:"Ei aloitettu",p:5,a:"2026-04-01",d:"2026-05-31"},
+  {n:"Live-stream",k:"Järjestä live-stream tapahtumia",ph:"3. Loppukiri",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2026-12-07",d:"2027-04-04"},
+  {n:"Tekstiviestimuistutukset",k:"Lähetä muistutustekstiviestejä niille, joilta yhteystiedot saatu",ph:"3. Loppukiri",o:"3. Viestintä",t:"Ei aloitettu",p:2,a:"2027-03-22",d:"2027-04-11"},
+  {n:"Ennakkoäänestystempaukset",k:"Järjestä ennakkoäänestystempauksia",ph:"3. Loppukiri",o:"4. Katukampanja",t:"Ei aloitettu",p:2,a:"2027-03-29",d:"2027-04-11"},
+  {n:"Kampanja-aikataulu",k:"Luo kampanjan aikataulu sekä päivitä deadlinet mm. kampanjasi julkaisupäivän perusteella",ph:"1. Valmistelu",o:"1. Suunnittelu",t:"Ei aloitettu",p:4,a:"2026-04-01",d:"2026-06-12"},
+];
+const PHASES=[
+  {n:"1. Valmistelu",a:"2026-03-23",d:null,desc:"Nykyhetkestä omaan julkaisupäivään asti. Alkupäivä on kampanja-ajan virallinen alku 18.10.2026, mutta valmistelu voi alkaa aiemmin. Loppupäivä on liikkuva — jokainen ehdokas määrittää oman julkaisupäivänsä itse."},
+  {n:"2. Ehdokkaana esiintyminen",a:null,d:"2027-03-18",desc:"Julkaisupäivästä ehdokasasettelun vahvistamiseen asti. Alkupäivä on liikkuva (oma julkaisupäivä). Loppuu 18.3.2027, jolloin ehdokasasettelu vahvistetaan vaalipiirilautakunnissa."},
+  {n:"3. Loppukiri",a:"2027-03-18",d:"2027-04-02",desc:"Ehdokasasettelun vahvistamisesta ennakkoäänestystä edeltävään sunnuntaihin 6.4.2027."},
+  {n:"4. Vapaapudotus",a:"2027-04-03",d:"2027-04-18",desc:"Ennakkoäänestyksen alusta (7.4.) vaalipäivään (18.4.2027). Tämä on se viikko jolloin äänet jo annetaan."},
+  {n:"5. Jälkityöt",a:"2027-04-19",d:"2027-05-31",desc:"Vaalipäivän jälkeen. Tulosten vahvistaminen 21.4.2027. Sisältää kiitosviestit, vaalirahoitusilmoitukset (2 kk sisällä) ja tiimin purkutilaisuuden."}
+];
+const AREAS=[
+  {n:"Helsinki",r:"Pääkaupunkiseutu",v:672000,desc:"Suomen pääkaupunki. Poliittisesti moninainen, korkea äänestysaktiivisuus.",t:"Urban"},
+  {n:"Espoo",r:"Pääkaupunkiseutu",v:302000,desc:"Suomen toiseksi suurin kaupunki. Kouluttautunut väestö, teknologia-ala, lapsiperheitä.",t:"Urban"},
+  {n:"Vantaa",r:"Pääkaupunkiseutu",v:239000,desc:"Suomen neljänneksi suurin kaupunki. Helsinki-Vantaan lentoasema. Monikulttuurinen ja kasvava.",t:"Urban"},
+  {n:"Porvoo",r:"Itä-Uusimaa",v:51000,desc:"Kaksikielinen historiallinen kaupunki. Kulttuuria, elinkeinoelämää ja jalosteteollisuutta.",t:"Suburban"},
+  {n:"Lohja",r:"Länsi-Uusimaa",v:47000,desc:"Uudenmaan toiseksi suurin kaupunki Helsingin ulkopuolella. Teollisuutta ja palvelualoja.",t:"Suburban"},
+  {n:"Hyvinkää",r:"Keski-Uusimaa",v:47000,desc:"Teollisuuskaupunki, hyvät junayhteydet. Perheellisiä asukkaita ja työväestöä.",t:"Suburban"},
+  {n:"Järvenpää",r:"Keski-Uusimaa",v:45000,desc:"Kasvava kaupunki Tuusulanjärven rannalla. Lapsiperheet ja pendelöijät pääkaupunkiseudulle.",t:"Suburban"},
+  {n:"Nurmijärvi",r:"Keski-Uusimaa",v:43000,desc:"Nopeasti kasvava kunta, paljon lapsiperheitä. Tunnettu Nurmijärvi-ilmiöstä.",t:"Suburban"},
+  {n:"Kirkkonummi",r:"Länsi-Uusimaa",v:40000,desc:"Kaksikielinen kunta. Merellinen sijainti, lapsiperheitä, pendelöijiä.",t:"Suburban"},
+  {n:"Tuusula",r:"Keski-Uusimaa",v:39000,desc:"Historiallinen järvikunta, kuuluisa taiteilijayhteisöistä. Lapsiperheitä, pendelöijiä.",t:"Suburban"},
+  {n:"Kerava",r:"Keski-Uusimaa",v:36000,desc:"Tiivis kaupunki, hyvät junayhteydet Helsinkiin. Nuori väestö, paljon pendelöijiä.",t:"Suburban"},
+  {n:"Raasepori",r:"Länsi-Uusimaa",v:27000,desc:"Kaksikielinen rannikkokaupunki, enemmistö ruotsinkielisiä. Merellinen luonto, historia.",t:"Suburban"},
+  {n:"Sipoo",r:"Itä-Uusimaa",v:22000,desc:"Kaksikielinen kunta Helsingin itäpuolella. Nopeasti kasvava, merellinen luonto.",t:"Suburban"},
+  {n:"Mäntsälä",r:"Keski-Uusimaa",v:21000,desc:"Maaseutumainen kunta kasvavalla taajamalla. Maatalous ja logistiikka keskeisiä elinkeinoja.",t:"Rural"},
+  {n:"Loviisa",r:"Itä-Uusimaa",v:15000,desc:"Kaksikielinen historiallinen rannikkokaupunki. Ydinvoimala tärkeä työllistäjä.",t:"Suburban"},
+  {n:"Kauniainen",r:"Pääkaupunkiseutu",v:9800,desc:"Kaksikielinen pikkukaupunki Espoon ympäröimänä. Korkea tulotaso, hyvin koulutettu väestö.",t:"Suburban"},
+  {n:"Hanko",r:"Länsi-Uusimaa",v:8400,desc:"Suomen eteläisin kaupunki. Kaksikielinen, merellinen, suosittu kesämatkailukohde.",t:"Urban"},
+  {n:"Karkkila",r:"Länsi-Uusimaa",v:8900,desc:"Pieni teollisuuskaupunki. Vasemmistoperinteitä, aktiivinen paikallisyhteisö.",t:"Suburban"},
+  {n:"Inkoo",r:"Länsi-Uusimaa",v:5700,desc:"Kaksikielinen rannikkopiiri. Pääasiassa ruotsinkielinen väestö, merellinen luonto.",t:"Rural"},
+  {n:"Siuntio",r:"Länsi-Uusimaa",v:6200,desc:"Kaksikielinen pikkukunta. Rauhallinen maaseutumainen ympäristö, lapsiperheitä.",t:"Rural"},
+  {n:"Vihti",r:"Länsi-Uusimaa",v:29000,desc:"Kasvava kunta järvimaisemassa. Lapsiperheitä ja pääkaupunkiseudulle pendelöiviä.",t:"Suburban"},
+  {n:"Pornainen",r:"Keski-Uusimaa",v:5200,desc:"Pieni maaseutukunta. Yhteisöllinen ja rauhallinen, paljon lapsiperheitä.",t:"Rural"},
+  {n:"Pukkila",r:"Itä-Uusimaa",v:2000,desc:"Pieni maaseutukunta. Rauhallinen, maatalousvaltainen ympäristö.",t:"Rural"},
+  {n:"Lapinjärvi",r:"Itä-Uusimaa",v:2700,desc:"Pieni kaksikielinen maaseutukunta. Harvaan asuttu, maatalousvaltainen.",t:"Rural"},
+  {n:"Askola",r:"Itä-Uusimaa",v:5100,desc:"Pieni maaseutukunta Porvoojoen varrella. Lapsiperheitä ja maatalousyrittäjiä.",t:"Rural"},
+  {n:"Myrskylä",r:"Itä-Uusimaa",v:2000,desc:"Pieni kaksikielinen maaseutukunta. Rauhallinen asuinympäristö.",t:"Rural"}
+];
+
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+function chunk(arr,n){const c=[];for(let i=0;i<arr.length;i+=n)c.push(arr.slice(i,i+n));return c;}
+
+async function runSetup(){
+  const key=document.getElementById('apiKey').value.trim();
+  const se=document.getElementById('status'),pw=document.getElementById('pw'),pb=document.getElementById('pb'),pt=document.getElementById('pt'),rl=document.getElementById('rl'),btn=document.getElementById('createBtn'),bt=document.getElementById('btn-text');
+  const wid=document.getElementById('workspaceId').value.trim();
+  if(!wid){se.className='status error';se.textContent='Syötä ensin työtilan ID (wsp...).';return;}
+  if(!/^wsp[A-Za-z0-9]{14}$/.test(wid)){se.className='status error';se.textContent='Työtilan ID on väärässä muodossa. Sen pitää alkaa "wsp" ja sisältää 17 merkkiä yhteensä.';return;}
+  if(!key){se.className='status error';se.textContent='Syötä ensin API-tunnus.';return;}
+  btn.disabled=true;bt.innerHTML='<span class="spinner"></span> Luodaan pohjaa...';
+  se.className='status info';se.textContent='Yhdistetään Airtableen...';pw.style.display='block';pb.style.width='10%';rl.style.display='none';
+  const h={'Authorization':'Bearer '+key,'Content-Type':'application/json'};
+  const prog=(p,t)=>{pb.style.width=p+'%';pt.textContent=t;};
+  try{
+    prog(15,'Luodaan tietokanta...');se.textContent='Luodaan tietokanta ja taulukot...';
+    const br=await fetch('https://api.airtable.com/v0/meta/bases',{method:'POST',headers:h,body:JSON.stringify({name:'Vaalikampanja',workspaceId:wid,tables:[
+      {name:'Tasks',fields:[
+        {name:'Tehtävä',type:'singleLineText'},{name:'Kuvaus',type:'multilineText'},
+        {name:'Osa-alue',type:'singleSelect',options:{choices:[{name:'0. Hallinto ja luvat',color:'redLight2'},{name:'1. Suunnittelu',color:'orangeLight2'},{name:'2. Tukiryhmä',color:'yellowLight2'},{name:'3. Viestintä',color:'greenLight2'},{name:'4. Katukampanja',color:'tealLight2'},{name:'5. Talous',color:'blueLight2'},{name:'6. Tapahtumat',color:'purpleLight2'},{name:'7. Data & CRM',color:'pinkLight2'},{name:'8. Media ja brändi',color:'grayLight2'},{name:'9. Esiintymiset',color:'cyanLight2'},{name:'10. Sidosryhmät',color:'orangeLight1'}]}},
+        {name:'Aktivointi',type:'date',options:{dateFormat:{name:'european'}}},{name:'Deadline',type:'date',options:{dateFormat:{name:'european'}}},
+        {name:'Prioriteetti',type:'rating',options:{icon:'star',max:5,color:'yellowBright'}},
+        {name:'Tilanne',type:'singleSelect',options:{choices:[{name:'Ei aloitettu',color:'grayLight2'},{name:'Kesken',color:'yellowLight1'},{name:'Odottaa',color:'orangeLight1'},{name:'Valmis',color:'greenLight1'},{name:'Passiivinen',color:'tealDark1'}]}}
+      ]},
+      {name:'Tiimi',fields:[
+        {name:'Nimi',type:'singleLineText'},
+        {name:'Rooli',type:'singleSelect',options:{choices:[{name:'Kampanjapäällikkö',color:'blueBright'},{name:'Talousvastaava',color:'greenBright'},{name:'Viestintävastaava',color:'purpleBright'},{name:'Some-vastaava',color:'pinkBright'},{name:'Vapaaehtoinen',color:'yellowBright'},{name:'Koordinaattori',color:'tealBright'},{name:'Muu',color:'grayBright'}]}},
+        {name:'Sähköposti',type:'email'},{name:'Puhelin',type:'phoneNumber'},{name:'Alue',type:'singleLineText'},{name:'Muistiinpanot',type:'multilineText'},
+        {name:'Aktiivinen',type:'checkbox',options:{icon:'check',color:'greenBright'}}
+      ]},
+      {name:'Alueet',fields:[
+        {name:'Kunnan nimi',type:'singleLineText'},{name:'Alue',type:'singleLineText'},{name:'Väkiluku',type:'number',options:{precision:0}},{name:'Kuvaus',type:'multilineText'},
+        {name:'Aluetyyppi',type:'singleSelect',options:{choices:[{name:'Urban',color:'blueLight2'},{name:'Suburban',color:'cyanLight2'},{name:'Rural',color:'tealLight2'}]}},
+        {name:'Kampanjat',type:'singleLineText'},{name:'Tehtävät',type:'singleLineText'}
+      ]},
+      {name:'Kampanjavaiheiden aikataulu',fields:[
+        {name:'Kampanjavaihe',type:'singleLineText'},{name:'Alkupäivä',type:'date',options:{dateFormat:{name:'european'}}},{name:'Loppupäivä',type:'date',options:{dateFormat:{name:'european'}}},{name:'Kuvaus',type:'multilineText'}
+      ]}
+    ]})});
+    const bd=await br.json();
+    if(!br.ok)throw new Error(bd.error?.message||JSON.stringify(bd));
+
+    const bid=bd.id,tbls=bd.tables;
+    const tid=tbls.find(t=>t.name==='Tasks').id,tmid=tbls.find(t=>t.name==='Tiimi').id,aid=tbls.find(t=>t.name==='Alueet').id,sid=tbls.find(t=>t.name==='Kampanjavaiheiden aikataulu').id;
+    const tf=tbls.find(t=>t.name==='Tasks').fields;
+    const fTeh=tf.find(f=>f.name==='Tehtävä').id,fKuv=tf.find(f=>f.name==='Kuvaus').id,fOsa=tf.find(f=>f.name==='Osa-alue').id,fAkt=tf.find(f=>f.name==='Aktivointi').id,fDed=tf.find(f=>f.name==='Deadline').id,fPri=tf.find(f=>f.name==='Prioriteetti').id,fTil=tf.find(f=>f.name==='Tilanne').id;
+    const af=tbls.find(t=>t.name==='Alueet').fields;
+    const fKnn=af.find(f=>f.name==='Kunnan nimi').id,fAlr=af.find(f=>f.name==='Alue').id,fVkl=af.find(f=>f.name==='Väkiluku').id,fAkv=af.find(f=>f.name==='Kuvaus').id,fAlt=af.find(f=>f.name==='Aluetyyppi').id;
+    const pf=tbls.find(t=>t.name==='Kampanjavaiheiden aikataulu').fields;
+    const fKpv=pf.find(f=>f.name==='Kampanjavaihe').id,fAlk=pf.find(f=>f.name==='Alkupäivä').id,fLop=pf.find(f=>f.name==='Loppupäivä').id,fPkv=pf.find(f=>f.name==='Kuvaus').id;
+
+    prog(25,'Lisätään linkkikenttiä...');se.textContent='Lisätään linkkikenttiä taulukoiden välille...';
+    const lfKpv=await lf(h,bid,tid,'Kampanjavaihe',sid);await delay(300);
+    const fKpvLink=lfKpv.id;
+    await lf(h,bid,tid,'Vastuuhenkilö',tmid);await delay(300);
+    await lf(h,bid,aid,'Vastuuhenkilö',tmid);await delay(300);
+
+    prog(35,'Lisätään tehtäviä (0/144)...');se.textContent='Lisätään 144 tehtävää...';
+    const tb=chunk(TASKS,10);
+    const taskNameToId={};
+    for(let i=0;i<tb.length;i++){
+      const records=tb[i].map(t=>{const f={};f[fTeh]=t.n;if(t.k)f[fKuv]=t.k;if(t.o)f[fOsa]=t.o;if(t.a)f[fAkt]=t.a;if(t.d)f[fDed]=t.d;if(t.p)f[fPri]=t.p;if(t.t)f[fTil]=t.t;return{fields:f};});
+      const r=await fetch(`https://api.airtable.com/v0/${bid}/${tid}`,{method:'POST',headers:h,body:JSON.stringify({records})});
+      const rd=await r.json();if(!r.ok)throw new Error(rd.error?.message||'Tehtävien lisäys epäonnistui');
+      rd.records.forEach((rec,idx)=>{taskNameToId[tb[i][idx].n]=rec.id;});
+      const done=Math.min((i+1)*10,144);prog(35+Math.round((done/144)*30),`Lisätään tehtäviä (${done}/144)...`);
+      if(i<tb.length-1)await delay(300);
+    }
+
+    prog(68,'Lisätään kampanjavaiheiden aikataulu...');se.textContent='Lisätään 5 kampanjavaihetta...';
+    const pr=PHASES.map(p=>{const f={};f[fKpv]=p.n;if(p.a)f[fAlk]=p.a;if(p.d)f[fLop]=p.d;if(p.desc)f[fPkv]=p.desc;return{fields:f};});
+    const pr_r=await fetch(`https://api.airtable.com/v0/${bid}/${sid}`,{method:'POST',headers:h,body:JSON.stringify({records:pr})});
+    const pr_d=await pr_r.json();if(!pr_r.ok)throw new Error(pr_d.error?.message||'Vaiheiden lisäys epäonnistui');
+    const phaseNameToId={};
+    pr_d.records.forEach((rec,idx)=>{phaseNameToId[PHASES[idx].n]=rec.id;});
+
+    prog(72,'Yhdistetään tehtävät kampanjavaiheihin...');se.textContent='Yhdistetään tehtävät kampanjavaiheihin...';
+    const linkUpdates=TASKS.filter(t=>t.ph&&taskNameToId[t.n]&&phaseNameToId[t.ph]).map(t=>({
+      id:taskNameToId[t.n],fields:{[fKpvLink]:[phaseNameToId[t.ph]]}
+    }));
+    const luBatches=chunk(linkUpdates,10);
+    for(const batch of luBatches){
+      const r=await fetch(`https://api.airtable.com/v0/${bid}/${tid}`,{method:'PATCH',headers:h,body:JSON.stringify({records:batch})});
+      const rd=await r.json();if(!r.ok)throw new Error(rd.error?.message||'Linkkien lisäys epäonnistui');
+      await delay(300);
+    }
+
+    prog(80,'Lisätään kunnat...');se.textContent='Lisätään Uudenmaan kunnat...';
+    const arb=chunk(AREAS,10);
+    for(const batch of arb){
+      const records=batch.map(a=>{const f={};f[fKnn]=a.n;f[fAlr]=a.r;f[fVkl]=a.v;if(a.desc)f[fAkv]=a.desc;f[fAlt]=a.t;return{fields:f};});
+      const r=await fetch(`https://api.airtable.com/v0/${bid}/${aid}`,{method:'POST',headers:h,body:JSON.stringify({records})});
+      const rd=await r.json();if(!r.ok)throw new Error(rd.error?.message||'Alueiden lisäys epäonnistui');
+      await delay(300);
+    }
+
+    prog(100,'Valmis!');
+    se.className='status success';se.textContent='Pohja luotu onnistuneesti! 144 tehtävää, 5 kampanjavaihetta ja 26 kuntaa ovat valmiina.';
+    pw.style.display='none';bt.textContent='Luo Vaalikampanja-pohja';btn.disabled=false;
+    rl.style.display='block';rl.innerHTML=`<a href="https://airtable.com/${bid}" target="_blank">Avaa Vaalikampanja Airtablessa →</a>`;
+  }catch(err){
+    se.className='status error';se.textContent='Virhe: '+err.message;
+    pw.style.display='none';bt.textContent='Luo Vaalikampanja-pohja';btn.disabled=false;
+  }
+}
+
+async function lf(h,bid,tid,fn,ltd){
+  const r=await fetch(`https://api.airtable.com/v0/meta/bases/${bid}/tables/${tid}/fields`,{method:'POST',headers:h,body:JSON.stringify({name:fn,type:'multipleRecordLinks',options:{linkedTableId:ltd}})});
+  const d=await r.json();if(!r.ok)throw new Error(`Kentän "${fn}" lisäys epäonnistui: `+(d.error?.message||JSON.stringify(d)));return d;
+}
+</script>
+</body>
+</html>
