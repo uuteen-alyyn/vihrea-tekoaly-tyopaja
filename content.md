@@ -14,6 +14,29 @@ MCP (Model Context Protocol) on tapa antaa Claudelle pääsy ulkoisiin palveluih
 
 ---
 
+## Vihreä MCP
+
+Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaalitulosten, tapahtumien ja virallisten asiakirjojen hakuun.
+
+> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Tunnukset jaetaan erikseen turvallista kanavaa pitkin — niitä ei voi laittaa tähän julkiseen ohjeeseen. Pyydä omat tunnukset osoitteesta [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
+
+### Käyttöönotto
+
+1. Avaa [claude.ai](https://claude.ai), kirjaudu sisään (mikä tahansa Claude-tilaus käy, myös ilmainen)
+2. **Settings → Connectors → Add Custom Connector**
+3. Täytä:
+   * Server URL: `https://vihrea-mcp.leinonensanteri.fi`
+   * Client ID: c_04803343da386ff25146bccda7933497
+   * Client Secret: s_e09785d17684781ed7981b4b26cb876e1c43d0b63fbdd10c
+4. **Connect** → claude.ai ohjaa OAuth-autentikaatioon, joka pyörii hetken
+5. Vihreä Connected-merkki = käytössä
+
+Kysy esim. *"Mitä mieltä vihreät ovat perustulosta?"*, *"Ketkä ovat vihreiden ääniharavia Helsingissä?"*, *"Mitä tapahtumia Turussa on tulossa?"*
+
+**Tunnukset ovat jaettuja kaikkien luotettavien käyttäjien kesken — älä levitä eteenpäin.** Jos epäilet vuotoa, ota yhteyttä: [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
+
+---
+
 ## Notion MCP
 
 **Mitä voit tehdä:** luoda ja muokata sivuja, päivittää tietokantoja, hakea sisältöä omasta työtilastasi keskustelun kautta.
@@ -92,29 +115,6 @@ Asennus kestää muutamia sekunteja.
 4. Tallenna
 
 Yksityiskohtaiset ohjeet ja vianetsintä: [Bufferin viralliset MCP-ohjeet](https://developers.buffer.com/guides/integrations/mcp.html).
-
----
-
-## Vihreä MCP
-
-Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaalitulosten, tapahtumien ja virallisten asiakirjojen hakuun.
-
-> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Tunnukset jaetaan erikseen turvallista kanavaa pitkin — niitä ei voi laittaa tähän julkiseen ohjeeseen. Pyydä omat tunnukset osoitteesta [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
-
-### Käyttöönotto
-
-1. Avaa [claude.ai](https://claude.ai), kirjaudu sisään (mikä tahansa Claude-tilaus käy, myös ilmainen)
-2. **Settings → Connectors → Add Custom Connector**
-3. Täytä:
-   * Server URL: `https://vihrea-mcp.leinonensanteri.fi`
-   * Client ID: *(jaetaan erikseen)*
-   * Client Secret: *(jaetaan erikseen)*
-4. **Connect** → claude.ai ohjaa OAuth-autentikaatioon, joka pyörii hetken
-5. Vihreä Connected-merkki = käytössä
-
-Kysy esim. *"Mitä mieltä vihreät ovat perustulosta?"*, *"Ketkä ovat vihreiden ääniharavia Helsingissä?"*, *"Mitä tapahtumia Turussa on tulossa?"*
-
-**Tunnukset ovat jaettuja kaikkien luotettavien käyttäjien kesken — älä levitä eteenpäin.** Jos epäilet vuotoa, ota yhteyttä: [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
 
 ---
 
