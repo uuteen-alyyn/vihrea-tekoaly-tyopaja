@@ -20,7 +20,7 @@ MCP (Model Context Protocol) on tapa antaa Claudelle pääsy ulkoisiin palveluih
 
 Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaalitulosten, tapahtumien ja virallisten asiakirjojen hakuun.
 
-> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Tunnukset jaetaan erikseen turvallista kanavaa pitkin — niitä ei voi laittaa tähän julkiseen ohjeeseen. Pyydä omat tunnukset osoitteesta [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
+> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Palvelun tekemiseen on nähty paljon vaivaa, ethän jaa tunnuksia tuntemattomille tai ryhmächätteihin. Lisätietoja Santeri Leinonen (mailto:santeri.leinonen@vihreat.fi).
 
 ### Käyttöönotto
 
