@@ -6,6 +6,8 @@ Tervetuloa! Tämä sivu kokoaa työpajassa käytettävien MCP-palvelimien (Model
 
 Tämän sivun ohjeita ja työkaluja päivitetään ajoittain. Jos haluat sähköpostiisi tiedon muutoksista, [liity sähköpostilistalle tällä lomakkeella](https://forms.gle/oyfNjtdVXftrghAS8).
 
+Lisätietoja antaa: Santeri Leinonen (santeri.leinonen@vihreat.fi ; 044 980 7438 ; Discord @maredias)
+
 ---
 
 ## Mikä MCP on?
@@ -40,15 +42,18 @@ Kysy esim. *"Mitä mieltä vihreät ovat perustulosta?"*, *"Ketkä ovat vihreide
 ## Notion MCP
 
 **Mitä voit tehdä:** luoda ja muokata sivuja, päivittää tietokantoja, hakea sisältöä omasta työtilastasi keskustelun kautta.
+**Käyttö vaalityössä:** kampanjastrategiapohjat, vaalikärjet, kokousmuistiinpanot jne.
 
 ### Käyttöönotto
 
-1. Mene osoitteeseen [claude.ai](https://claude.ai) ja kirjaudu sisään
-2. Klikkaa profiilikuvaketta (oikea yläkulma) → **Settings**
-3. Vasemmasta sivupalkista valitse **Connectors** (joissain tileissä **Integrations**)
-4. Etsi listasta **Notion** → **Connect**
-5. Sinut ohjataan Notioniin kirjautumaan ja antamaan luvat
-6. Valmis — voit nyt pyytää Claudea Notion-toimintoihin
+1. Luo Notion-käyttäjä.
+2. Kopio Notion-kampanjapohjat (ohjeet alla).
+3. Mene osoitteeseen [claude.ai](https://claude.ai) ja kirjaudu sisään
+4. Klikkaa profiilikuvaketta (oikea yläkulma) → **Settings** (joissakin tileissä **Customize**, jos ei toimi selaimessa, käytä työpöytäsovellusta).
+5. Vasemmasta sivupalkista valitse **Connectors** (joissain tileissä **Integrations**)
+6. Etsi listasta **Notion** → **Connect**
+7. Sinut ohjataan Notioniin kirjautumaan ja antamaan luvat. 
+8. Valmis — voit nyt pyytää Claudea Notion-toimintoihin
 
 ### Aloitusmalli
 
@@ -64,9 +69,11 @@ Kopioi tämä Notion-malli omaan työtilaasi pohjaksi:
 
 ### Käyttöönotto
 
-1. [claude.ai](https://claude.ai) → **Settings** → **Connectors**
-2. Etsi **Airtable** → **Connect**
-3. Kirjaudu Airtableen ja valitse, mihin pohjiin annat pääsyn
+1. Luo Airtable-käyttäjätunnus.
+2. Kopioi vaalien to-do-pohja alla olevien vaalikampanja-ohjeiden mukaisesti.
+3. [claude.ai](https://claude.ai) → **Settings** tai **Customize** → **Connectors**
+4. Etsi **Airtable** → **Connect**
+5. Kirjaudu Airtableen ja valitse, mihin pohjiin annat pääsyn. Voit antaa pääsyn joko kaikkiin tuleviin Airtable-tietokantoihin tai ainoastaan aiemmin luotuun vaalikampanjapohjaan.
 
 ### Vaalikampanja-pohja
 
