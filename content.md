@@ -25,7 +25,7 @@ Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaa
 ### Käyttöönotto
 
 1. Avaa [claude.ai](https://claude.ai), kirjaudu sisään (mikä tahansa Claude-tilaus käy, myös ilmainen)
-2. **Settings → Connectors → Add Custom Connector**
+2. **Settings tai integrations → Connectors → Add Custom Connector**
 3. Täytä:
    * Server URL: `https://vihrea-mcp.leinonensanteri.fi`
    * Client ID: c_04803343da386ff25146bccda7933497
