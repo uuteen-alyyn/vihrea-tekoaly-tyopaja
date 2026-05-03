@@ -9,10 +9,17 @@ Tämän sivun ohjeita ja työkaluja päivitetään ajoittain. Jos haluat sähkö
 Lisätietoja antaa: Santeri Leinonen (santeri.leinonen@vihreat.fi ; 044 980 7438 ; Discord @maredias)
 
 ---
+
 ## Mikä on Skilli?
-Tulossa pian
+
+Skilli (Claude Skill) on Clauden "osaamispaketti" — kokoelma ohjeita, esimerkkejä ja työkaluja, jotka Claude lataa itselleen automaattisesti silloin, kun keskustelu osuu skillin aihepiiriin. Esimerkiksi viestintä-skilli aktivoituu, kun pyydät Claudea kirjoittamaan twiittiä tai suunnittelemaan some-sarjaa.
+
+**Miten skilli eroaa MCP:stä?** MCP on yhteys *ulkoiseen palveluun* (Notion, Airtable, Canva) — skilli on *Clauden sisäinen ohjeisto*, joka kertoo Claudelle miten tietty työ kannattaa tehdä Vihreiden tyyliin. Skillit ja MCP:t toimivat yhdessä: skilli ohjaa Claudea, MCP antaa sille pääsyn dataan.
+
+**Miten skillin saa käyttöön?** Skillit asennetaan kopioimalla skillin tiedostot omaan Claude Code- tai claude.ai-projektiin. Tarkat ohjeet löytyvät jokaisen skillin omasta repositoriosta (linkit alla).
 
 ---
+
 ## Käynnistys-skilli
 Tulossa pian
 
@@ -20,8 +27,11 @@ Tulossa pian
 
 ## Viestintä-skilli
 
-https://github.com/uuteen-alyyn/vihreat-some-skilli
+**Mitä se tekee:** auttaa vihreää ehdokasta tuottamaan some-sisältöä ja suunnittelemaan viestintästrategiaa Vihreiden tyyliin. Paketti sisältää kahdeksan erillistä skilliä: postausten ja sarjojen kirjoitukseen, perinteisen median tekstien valmisteluun, strategian suunnitteluun sekä analytiikkaan.
 
+**Mihin se nojaa:** skilli hyödyntää Notionin, Airtablen ja Canvan kautta tuotuja kampanjamateriaalejasi (vaalikärjet, faktapaketit, visuaalinen ilme). Toimii rajoitetusti ilman näitä — täyden hyödyn saa, kun yllä olevat MCP:t on liitetty.
+
+**Käyttöönotto ja asennusohjeet:** [github.com/uuteen-alyyn/vihreat-some-skilli](https://github.com/uuteen-alyyn/vihreat-some-skilli)
 
 ---
 
@@ -35,7 +45,7 @@ MCP (Model Context Protocol) on tapa antaa Claudelle pääsy ulkoisiin palveluih
 
 Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaalitulosten, tapahtumien ja virallisten asiakirjojen hakuun.
 
-> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Palvelun tekemiseen on nähty paljon vaivaa, ethän jaa tunnuksia tuntemattomille tai ryhmächätteihin. Lisätietoja Santeri Leinonen (mailto:santeri.leinonen@vihreat.fi).
+> **Huom:** Vihreä MCP on custom connector, joka vaatii oman `client_id`:n ja `client_secret`:n. Tunnukset jaetaan erikseen turvallista kanavaa pitkin — niitä ei voi laittaa tähän julkiseen ohjeeseen. Palvelun tekemiseen on nähty paljon vaivaa, ethän jaa tunnuksia tuntemattomille tai ryhmächätteihin. Pyydä omat tunnukset: [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
 
 ### Käyttöönotto
 
@@ -43,8 +53,8 @@ Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaa
 2. **Settings tai integrations → Connectors → Add Custom Connector**
 3. Täytä:
    * Server URL: `https://vihrea-mcp.leinonensanteri.fi`
-   * Client ID: c_04803343da386ff25146bccda7933497
-   * Client Secret: s_e09785d17684781ed7981b4b26cb876e1c43d0b63fbdd10c
+   * Client ID: *(jaetaan erikseen)*
+   * Client Secret: *(jaetaan erikseen)*
 4. **Connect** → claude.ai ohjaa OAuth-autentikaatioon, joka pyörii hetken
 5. Vihreä Connected-merkki = käytössä
 
