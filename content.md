@@ -15,18 +15,18 @@ Lisätietoja antaa: Santeri Leinonen (santeri.leinonen@vihreat.fi ; 044 980 7438
 **Skillit** — Clauden sisäiset osaamispaketit:
 
 - Mikä on Skilli?
-- Käynnistys-skilli        | Miten otan kaiken tämän käyttöön?
-- Viestintä-skilli         | Miten Claude tekisi parempia postauksia
-- Kampanjapäällikkö-skilli | Claudesta automaattinen sihteeri
+- Käynnistys-skilli ________ | Miten otan kaiken tämän käyttöön?
+- Viestintä-skilli  ________ | Miten Claude tekisi parempia postauksia
+- Kampanjapäällikkö-skilli _ | Claudesta automaattinen sihteeri
 
 **MCP-palvelimet** — yhteydet ulkoisiin palveluihin:
 
 - Mikä MCP on?
-- Vihreä MCP               | puolueen omat materiaalit
-- Notion MCP               | strategia ja tilannekuva
-- Airtable MCP             | to-do listat ja projektijohtaminen
-- Canva MCP                | Canva-designeja suoraan tekoälyllä
-- Buffer MCP               | some-postausten julkaisu Facebook, Instagram jne
+- Vihreä MCP _____________ | puolueen omat materiaalit
+- Notion MCP _____________ | strategia ja tilannekuva
+- Airtable MCP ___________ | to-do listat ja projektijohtaminen
+- Canva MCP ______________ | Canva-designeja suoraan tekoälyllä
+- Buffer MCP _____________ | some-postausten julkaisu Facebook, Instagram jne
 
 ---
 
