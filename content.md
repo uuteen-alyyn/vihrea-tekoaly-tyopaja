@@ -9,6 +9,21 @@ Tämän sivun ohjeita ja työkaluja päivitetään ajoittain. Jos haluat sähkö
 Lisätietoja antaa: Santeri Leinonen (santeri.leinonen@vihreat.fi ; 044 980 7438 ; Discord @maredias)
 
 ---
+## Mikä on Skilli?
+Tulossa pian
+
+---
+## Käynnistys-skilli
+Tulossa pian
+
+---
+
+## Viestintä-skilli
+
+https://github.com/uuteen-alyyn/vihreat-some-skilli
+
+
+---
 
 ## Mikä MCP on?
 
