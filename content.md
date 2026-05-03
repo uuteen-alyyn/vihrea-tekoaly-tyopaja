@@ -63,6 +63,8 @@ Tulossa pian
 
 **Käyttöönotto ja asennusohjeet:** [github.com/uuteen-alyyn/kampanjapaallikko-skilli](https://github.com/uuteen-alyyn/kampanjapaallikko-skilli)
 
+Vinkki: hyödynnä myös Claude rutiinit eli ajastetut tehtävät https://claude.ai/code/routines
+
 ---
 
 ## Mikä MCP on?
