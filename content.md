@@ -85,8 +85,8 @@ Vihreiden oma MCP-palvelin — tarjoaa Clauden chatissa työkaluja Vihreiden vaa
 2. **Settings tai integrations → Connectors → Add Custom Connector**
 3. Täytä:
    * Server URL: `https://vihrea-mcp.leinonensanteri.fi`
-   * Client ID: *(jaetaan erikseen)*
-   * Client Secret: *(jaetaan erikseen)*
+   * Client ID: c_04803343da386ff25146bccda7933497
+   * Client Secret: s_e09785d17684781ed7981b4b26cb876e1c43d0b63fbdd10c
 4. **Connect** → claude.ai ohjaa OAuth-autentikaatioon, joka pyörii hetken
 5. Vihreä Connected-merkki = käytössä
 
