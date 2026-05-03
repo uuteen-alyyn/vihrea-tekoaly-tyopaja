@@ -10,6 +10,26 @@ Lisätietoja antaa: Santeri Leinonen (santeri.leinonen@vihreat.fi ; 044 980 7438
 
 ---
 
+## Sisältö
+
+**Skillit** — Clauden sisäiset osaamispaketit:
+
+- Mikä on Skilli?
+- Käynnistys-skilli
+- Viestintä-skilli
+- Kampanjapäällikkö-skilli
+
+**MCP-palvelimet** — yhteydet ulkoisiin palveluihin:
+
+- Mikä MCP on?
+- Vihreä MCP
+- Notion MCP
+- Airtable MCP
+- Canva MCP
+- Buffer MCP
+
+---
+
 ## Mikä on Skilli?
 
 Skilli (Claude Skill) on Clauden "osaamispaketti" — kokoelma ohjeita, esimerkkejä ja työkaluja, jotka Claude lataa itselleen automaattisesti silloin, kun keskustelu osuu skillin aihepiiriin. Esimerkiksi viestintä-skilli aktivoituu, kun pyydät Claudea kirjoittamaan twiittiä tai suunnittelemaan some-sarjaa.
