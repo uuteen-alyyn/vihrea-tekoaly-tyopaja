@@ -35,6 +35,16 @@ Tulossa pian
 
 ---
 
+## Kampanjapäällikkö-skilli
+
+**Mitä se tekee:** muuttaa Clauden sähköiseksi kampanjapäälliköksi vihreälle eduskuntavaaliehdokkaalle. Skilli hallinnoi kampanjan rakennetta, aikataulua ja teemoja sekä luo ja päivittää kampanjadokumentteja Airtablen ja Notionin kautta.
+
+**Mihin se nojaa:** edellyttää Airtable- ja Notion-MCP:t. Vihreä MCP on valinnainen — sen kanssa skilli tuo myös puoluedataa ja kampanjatietoa keskusteluun.
+
+**Käyttöönotto ja asennusohjeet:** [github.com/uuteen-alyyn/kampanjapaallikko-skilli](https://github.com/uuteen-alyyn/kampanjapaallikko-skilli)
+
+---
+
 ## Mikä MCP on?
 
 MCP (Model Context Protocol) on tapa antaa Claudelle pääsy ulkoisiin palveluihin — Notioniin, Airtableen, Canvaan ja muihin. Liität palvelun kerran, ja sen jälkeen voit pyytää Claudea tekemään asioita siellä keskustelun kautta.
