@@ -94,6 +94,16 @@ Kysy esim. *"Mitä mieltä vihreät ovat perustulosta?"*, *"Ketkä ovat vihreide
 
 **Tunnukset ovat jaettuja kaikkien luotettavien käyttäjien kesken — älä levitä eteenpäin.** Jos epäilet vuotoa, ota yhteyttä: [santeri.leinonen@vihreat.fi](mailto:santeri.leinonen@vihreat.fi).
 
+### Yhteyden uusiminen (noin kahden viikon välein)
+
+Vihreä MCP -yhteys vanhenee turvallisuussyistä noin kahden viikon välein. **Tämä on normaalia eikä tarkoita, että jokin olisi rikki.** Kun yhteys on vanhentunut, Claude ei enää löydä Vihreän työkaluja tai ilmoittaa, ettei se saa yhteyttä palvelimeen.
+
+Näin uusit yhteyden:
+
+1. [claude.ai](https://claude.ai) → **Settings** tai **Integrations** → **Connectors**
+2. Etsi listasta **Vihreä MCP** ja klikkaa **Connect**. Jos yhteyttä ei voi uusia näin, poista connector ja lisää se uudelleen samoilla tunnuksilla.
+3. claude.ai pyörittää OAuth-autentikaation uudelleen, ja yhteys aukeaa hetkessä.
+
 ---
 
 ## Notion MCP
@@ -182,4 +192,4 @@ Yksityiskohtaiset ohjeet ja vianetsintä: [Bufferin viralliset MCP-ohjeet](https
 
 ---
 
-*Päivitetty: 3.5.2026*
+*Päivitetty: 25.5.2026*
