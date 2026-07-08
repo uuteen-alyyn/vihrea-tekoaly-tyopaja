@@ -49,7 +49,7 @@ Tulossa pian
 
 Claude-skill vaalikampanjan brändi- ja viestintätyöhön. Auttaa kirkastamaan ehdokkaan tai puolueen pääviestiä, erottumaan kilpailijoista (myös oman listan sisällä), tunnistamaan oikean äänestäjäheimon ja arvioimaan, tukeeko kampanjamateriaali haluttua mielikuvaa. Toimii suomeksi, yleisenä mille tahansa ehdokkaalle tai puolueelle. 
 
-**Käyttöönotto**: kopioi kansio ~/.claude/skills/-hakemistoon (Claude Code) tai lataa zip claude.ai:n skill-asetuksista. Ohjeet README.md-tiedostossa.
+**Käyttöönotto**: lataa tämä zip-tiedosto (https://github.com/uuteen-alyyn/vihrea-tekoaly-tyopaja/blob/main/poliittinen-brandikonsultti.zip). Kopioi kansio ~/.claude/skills/-hakemistoon (Claude Code) tai lataa zip claude.ai:n skill-asetuksista. Ohjeet README.md-tiedostossa.
 
 ---
 
