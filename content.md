@@ -45,6 +45,14 @@ Tulossa pian
 
 ---
 
+## Poliittinen brändikonsultti -skilli
+
+Claude-skill vaalikampanjan brändi- ja viestintätyöhön. Auttaa kirkastamaan ehdokkaan tai puolueen pääviestiä, erottumaan kilpailijoista (myös oman listan sisällä), tunnistamaan oikean äänestäjäheimon ja arvioimaan, tukeeko kampanjamateriaali haluttua mielikuvaa. Toimii suomeksi, yleisenä mille tahansa ehdokkaalle tai puolueelle. 
+
+**Käyttöönotto**: kopioi kansio ~/.claude/skills/-hakemistoon (Claude Code) tai lataa zip claude.ai:n skill-asetuksista. Ohjeet README.md-tiedostossa.
+
+---
+
 ## Viestintä-skilli
 
 **Mitä se tekee:** auttaa vihreää ehdokasta tuottamaan some-sisältöä ja suunnittelemaan viestintästrategiaa Vihreiden tyyliin. Paketti sisältää kahdeksan erillistä skilliä: postausten ja sarjojen kirjoitukseen, perinteisen median tekstien valmisteluun, strategian suunnitteluun sekä analytiikkaan.
